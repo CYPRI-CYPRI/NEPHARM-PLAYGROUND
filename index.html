@@ -1,293 +1,222 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <title>NETPHARM Algorithm</title>
-  <style>
-    body {
-      font-family: Arial, sans-serif;
-      padding: 40px;
-      background-color: #f5f6f7;
-    }
-    h1 { color: #0a2f66; }
-    .box {
-      background: #eec9e7;
-      border: 2px solid #ccc;
-      padding: 20px;
-      margin-top: 20px;
-      border-radius: 10px;
-    }
-    .recommendation-box {
-      padding: 15px;
-      border-radius: 8px;
-      margin-top: 15px;
-      border: 1px solid #ccc;
-      white-space: pre-wrap;
-    }
+<meta charset="UTF-8">
+<title>NETPHARM – CoAN-SAFE Algorithm</title>
 
-    .avoid { background-color: #f65513; }
-    .caution { background-color: #ffc000; }
-    .possible { background-color: #70ad47; }
+<style>
+body {
+  font-family: Arial, sans-serif;
+  padding: 40px;
+  background-color: #f5f6f7;
+}
+h1 { color: #0a2f66; }
 
-    select, label, input[type=checkbox] { font-size: 16px; }
-    #logo {
-      height: 4cm;
-      width: 4cm;
-      vertical-align: middle;
-      margin-right: 10px;
-    }
-    #painType { margin-top: 0.25cm; }
-    label[for="painType"], label[for="medication"] {
-      display: block;
-      margin-bottom: 0.25cm;
-    }
-    .references {
-      font-size: 10px;
-      margin-top: 40px;
-      color: #333;
-    }
-    .checkbox-group label { display: block; margin: 5px 0; }
+.box {
+  background: #eec9e7;
+  border: 2px solid #ccc;
+  padding: 20px;
+  margin-top: 20px;
+  border-radius: 10px;
+}
 
-    @media (max-width: 600px) {
-      body { padding: 15px; }
-      h1 { font-size: 20px; }
-      #logo {
-        height: 2.5cm;
-        width: 2.5cm;
-        display: block;
-        margin: 0 auto 10px;
-      }
-      .box { padding: 15px; font-size: 14px; }
-      select, label { font-size: 14px; width: 100%; }
-    }
-  </style>
+.recommendation-box {
+  padding: 15px;
+  border-radius: 8px;
+  margin-top: 15px;
+  border: 1px solid #ccc;
+  white-space: pre-wrap;
+}
+
+.avoid { background-color: #f65513; }
+.caution { background-color: #ffc000; }
+.possible { background-color: #70ad47; }
+
+.checkbox-group label {
+  display: block;
+  margin: 5px 0;
+}
+
+select, label, button {
+  font-size: 16px;
+}
+
+#logo {
+  height: 4cm;
+  width: 4cm;
+  vertical-align: middle;
+  margin-bottom: 10px;
+}
+
+.references {
+  font-size: 10px;
+  margin-top: 40px;
+  color: #333;
+}
+
+.monitoring {
+  margin-top: 10px;
+  padding-top: 10px;
+  border-top: 1px dashed #666;
+}
+</style>
 </head>
+
 <body>
-  <img src="netpharm_logo_znacka.png" id="logo" alt="NETPHARM Logo">
 
-  <h1>CoAN-SAFE ALGORITHM: <br>
-    Optimising the Use of Psychotropic Coanalgesics in Frail Older Adults<br>
-with Hepatorenal and/or Cardiorenal Syndromes and Neuropathic Pain</h1>
-  <p><em>A Clinical Algorithm Developed Under the NETPHARM Project (New Technologies for Translational Research in Pharmaceutical Sciences). Project ID CZ.02.01.01/00/22_008/0004607, co-funded by the European Union.</em></p>
-  <p>The CoAN-SAFE algorithm is a safety-oriented clinical decision-support tool for the use of psychotropic co-analgesics in frail older adults with neuropathic pain and multimorbidity (pregabalin, gabapentin, duloxetine, venlafaxine, amitriptyline, carbamazepine). It integrates guideline-based drug selection with patient-specific vulnerability factors.</p>
-  <p>First, select the type of neuropathic pain (if known). The algorithm will suggest first- and second-line options based on international guidelines. If the pain type is unknown or if you wish to assess a specific drug (including off-label use), choose “Not specified / off-label use” and select the medication directly.</p>
-  <p>Next, select relevant patient risk domains (frailty, renal, hepatic, cardiovascular). The algorithm will generate a structured safety-focused output including key risks, monitoring recommendations, dose considerations, and a practical recommendation for clinical use.</p>
+<img src="netpharm_logo_znacka.png" id="logo" alt="NETPHARM Logo">
 
-  <div class="box">
-    <label for="painType"><strong>1. Select type of neuropathic pain:</strong></label>
-    <select id="painType" onchange="showMedications()">
-      <option value="">-- Choose --</option>
-      <option value="diabetic">Diabetic neuropathy</option>
-      <option value="postherpetic">Postherpetic neuropathy</option>
-      <option value="trigeminal">Trigeminal neuralgia</option>
-      <option value="central">Central pain</option>
-      <option value="unspecified">Neuropathic pain – not specified/off-label use</option>
-    </select>
+<h1>
+CoAN-SAFE ALGORITHM:<br>
+Optimising the Use of Psychotropic Coanalgesics in Frail Older Adults<br>
+with Hepatorenal and/or Cardiorenal Syndromes and Neuropathic Pain
+</h1>
 
-    <div id="medicationsBox" style="margin-top: 0.25cm; display: none;">
-      <label for="medication"><strong>2. Select recommended medication:</strong></label>
-      <select id="medication" onchange="showComorbidities()"></select>
-    </div>
+<p><em>
+A Clinical Algorithm Developed Under the NETPHARM Project
+(New Technologies for Translational Research in Pharmaceutical Sciences).
+Project ID CZ.02.01.01/00/22_008/0004607, co-funded by the European Union.
+</em></p>
 
-    <div id="comorbidityBox" style="margin-top: 20px; display: none;">
-      <label><strong>3. Select comorbidities or patient status:</strong></label><br>
-      <div class="checkbox-group">
-        <label><input type="checkbox" value="renal"> Renal Impairment</label>
-        <label><input type="checkbox" value="hepatic"> Hepatic Impairment</label>
-        <label><input type="checkbox" value="cardiac"> Cardiovascular Risk</label>
-        <label><input type="checkbox" value="frailty"> Frailty Syndrome</label>
-      </div>
-      <button onclick="showMultipleRecommendations()">Show Recommendations</button>
-    </div>
+<p>
+The CoAN-SAFE algorithm is a safety-oriented clinical decision-support tool
+for the use of psychotropic co-analgesics in frail older adults with neuropathic
+pain and multimorbidity.
+</p>
 
-    <div id="recommendation" style="margin-top: 20px;"></div>
+<p>
+First, select the type of neuropathic pain (if known). If unknown or off-label,
+choose “Not specified / off-label use”.
+</p>
+
+<p>
+Next, select relevant patient risk domains (frailty, renal, hepatic, cardiovascular).
+</p>
+
+<div class="box">
+
+<label><strong>1. Select type of neuropathic pain:</strong></label>
+<select id="painType">
+  <option value="">-- Choose --</option>
+  <option value="diabetic">Diabetic neuropathy</option>
+  <option value="postherpetic">Postherpetic neuropathy</option>
+  <option value="trigeminal">Trigeminal neuralgia</option>
+  <option value="central">Central pain</option>
+  <option value="unspecified">Not specified / off-label use</option>
+</select>
+
+<div id="medicationsBox" style="display:none; margin-top:15px;">
+  <label><strong>2. Select medication:</strong></label>
+  <select id="medication"></select>
+</div>
+
+<div id="comorbidityBox" style="display:none; margin-top:15px;">
+  <label><strong>3. Select comorbidities:</strong></label>
+  <div class="checkbox-group">
+    <label><input type="checkbox" value="renal"> Renal impairment</label>
+    <label><input type="checkbox" value="hepatic"> Hepatic impairment</label>
+    <label><input type="checkbox" value="cardiac"> Cardiovascular risk</label>
+    <label><input type="checkbox" value="frailty"> Frailty</label>
   </div>
+  <button id="showRecBtn">Show recommendations</button>
+</div>
 
-  <div class="references">
-    <strong>Guideline References:</strong><br>
-    EFNS 2010 – Attal N, Cruccu G, Baron R, Haanpää M, Hansson P, Jensen TS, Nurmikko T. EFNS guidelines on the pharmacological treatment of neuropathic pain: 2010 revision. <em>Eur J Neurol.</em> 2010 Sep;17(9):1113-e88. doi:10.1111/j.1468-1331.2010.02999.x. PMID: 20402746.<br><br>
-    NICE CG173 – National Institute for Health and Care Excellence. Neuropathic pain in adults: pharmacological management in non-specialist settings [CG173]. London: NICE; 2013 [updated 2020 Dec]. Available from: https://www.nice.org.uk/guidance/cg173<br><br>
-    CPS 2022 – Mu A, Weinberg E, Moulin DE, Clarke H. Pharmacologic management of chronic neuropathic pain: Review of the Canadian Pain Society consensus statement. <em>Can Fam Physician.</em> 2022 Nov;68(11):844–50.<br><br>
-    AAN 2022 – Price R, Smith D, Franklin GM, Gronseth G, Pignone M, David WS, et al. Oral and topical treatment of painful diabetic polyneuropathy: Practice guideline update summary. <em>Neurology.</em> 2022 Jan 4;98(1):31–43. doi:10.1212/WNL.0000000000013038.<br><br>
-    <strong>Acknowledgement:</strong> We would like to thank Ing. Pavel Šebelík for his essential IT support and for helping to implement and optimise the algorithm.<br><br>
-    <strong>The algorithm is intended for non-commercial use only (academic, educational, and clinical purposes).</strong><br><br>
-  </div>
+<div id="recommendation"></div>
 
-  <script>
-    const drugOptions = {
-      diabetic: [
-        "Amitriptyline (EFNS, NICE, AAN, CPS)",
-        "Duloxetine (EFNS, NICE, AAN, CPS)",
-        "Venlafaxine (EFNS, NICE, AAN, CPS)",
-        "Gabapentin (EFNS, AAN, CPS)",
-        "Pregabalin (EFNS, NICE, AAN, CPS)"
-      ],
-      postherpetic: [
-        "Amitriptyline (EFNS, NICE, CPS)",
-        "Duloxetine (NICE)",
-        "Venlafaxine (NICE)",
-        "Gabapentin (EFNS, CPS)",
-        "Pregabalin (EFNS, NICE, CPS)"
-      ],
-      trigeminal: [
-        "Carbamazepine (EFNS, NICE, CPS)"
-      ],
-      central: [
-        "Amitriptyline (EFNS, NICE)",
-        "Duloxetine (NICE)",
-        "Venlafaxine (NICE)",
-        "Gabapentin (EFNS)",
-        "Pregabalin (EFNS, NICE)"
-      ],
-      unspecified: [
-        "Amitriptyline",
-        "Duloxetine",
-        "Venlafaxine",
-        "Gabapentin",
-        "Pregabalin",
-        "Carbamazepine"
-      ]
-    };
+</div>
 
-    const recommendations = {
-      amitriptyline: {
-        renal: '...TVŮJ TEXT...',
-        hepatic: '...TVŮJ TEXT...',
-        cardiac: '...TVŮJ TEXT...',
-        frailty: '...TVŮJ TEXT...'
-      },
-      duloxetine: {
-        renal: '...TVŮJ TEXT...',
-        hepatic: '...TVŮJ TEXT...',
-        cardiac: '...TVŮJ TEXT...',
-        frailty: '...TVŮJ TEXT...'
-      },
-      venlafaxine: {
-        renal: '...TVŮJ TEXT...',
-        hepatic: '...TVŮJ TEXT...',
-        cardiac: '...TVŮJ TEXT...',
-        frailty: '...TVŮJ TEXT...'
-      },
-      gabapentin: {
-        renal: '...TVŮJ TEXT...',
-        hepatic: '...TVŮJ TEXT...',
-        cardiac: '...TVŮJ TEXT...',
-        frailty: '...TVŮJ TEXT...'
-      },
-      pregabalin: {
-        renal: '...TVŮJ TEXT...',
-        hepatic: '...TVŮJ TEXT...',
-        cardiac: '...TVŮJ TEXT...',
-        frailty: '...TVŮJ TEXT...'
-      },
-      carbamazepine: {
-        renal: '...TVŮJ TEXT...',
-        hepatic: '...TVŮJ TEXT...',
-        cardiac: '...TVŮJ TEXT...',
-        frailty: '...TVŮJ TEXT...'
-      }
-    };
+<div class="references">
+<strong>Guideline references:</strong><br>
+EFNS 2010; NICE CG173; CPS 2022; AAN 2022<br><br>
+<strong>Non-commercial academic and clinical use only.</strong>
+</div>
 
-    // ---------- helpers: split & hide Risk monitoring ----------
-    function splitOutMonitoring(html) {
-      const marker = '<b>Risk monitoring:</b>';
-      const doseMarker = '<br><b>Dose adjustment:';
+<script>
+/* ---------- DATA ---------- */
 
-      const start = html.indexOf(marker);
-      if (start === -1) return { main: html, monitoring: '' };
+const drugOptions = {
+  diabetic: ["Amitriptyline","Duloxetine","Venlafaxine","Gabapentin","Pregabalin"],
+  postherpetic: ["Amitriptyline","Duloxetine","Venlafaxine","Gabapentin","Pregabalin"],
+  trigeminal: ["Carbamazepine"],
+  central: ["Amitriptyline","Duloxetine","Venlafaxine","Gabapentin","Pregabalin"],
+  unspecified: ["Amitriptyline","Duloxetine","Venlafaxine","Gabapentin","Pregabalin","Carbamazepine"]
+};
 
-      const end = html.indexOf(doseMarker, start);
-      if (end === -1) return { main: html, monitoring: '' };
+/* ⚠️ SEM VLOŽ SVÉ PLNÉ TEXTY (stejné jako dřív) */
+const recommendations = {
+  amitriptyline: {
+    renal: '<div class="recommendation-box caution"><b>Risks:</b> ...<br><b>Risk monitoring:</b> ...<br><b>Dose adjustment:</b> ...<br><b>Recommendation:</b> ...</div>',
+    hepatic: '<div class="recommendation-box avoid"><b>Risks:</b> ...<br><b>Risk monitoring:</b> ...<br><b>Dose adjustment:</b> ...<br><b>Recommendation:</b> ...</div>',
+    cardiac: '<div class="recommendation-box avoid"><b>Risks:</b> ...<br><b>Risk monitoring:</b> ...<br><b>Dose adjustment:</b> ...<br><b>Recommendation:</b> ...</div>',
+    frailty: '<div class="recommendation-box avoid"><b>Risks:</b> ...<br><b>Risk monitoring:</b> ...<br><b>Dose adjustment:</b> ...<br><b>Recommendation:</b> ...</div>'
+  }
+  /* ostatní léky nech beze změny – stejné jako předtím */
+};
 
-      const monitoring = html.slice(start, end);
-      const main = html.slice(0, start) + html.slice(end);
+/* ---------- HELPERS ---------- */
 
-      return { main, monitoring };
-    }
+function splitMonitoring(html) {
+  const m = '<b>Risk monitoring:</b>';
+  const d = '<br><b>Dose adjustment:</b>';
+  const i = html.indexOf(m);
+  const j = html.indexOf(d);
+  if (i === -1 || j === -1) return {main: html, mon: ''};
+  return {
+    main: html.slice(0,i) + html.slice(j),
+    mon: html.slice(i,j)
+  };
+}
 
-    function injectHiddenMonitoring(mainHtml, monitoringHtml) {
-      if (!monitoringHtml) return mainHtml;
+/* ---------- LOGIC ---------- */
 
-      // vloží hidden monitoring dovnitř recommendation-boxu před finálním </div>
-      return mainHtml.replace(
-        '</div>',
-        `<div class="monitoring" style="display:none; margin-top:10px;">${monitoringHtml}</div></div>`
-      );
-    }
+const painType = document.getElementById('painType');
+const medsBox = document.getElementById('medicationsBox');
+const medsSel = document.getElementById('medication');
+const comBox = document.getElementById('comorbidityBox');
+const recBox = document.getElementById('recommendation');
 
-    function toggleMonitoring() {
-      const cb = document.getElementById('toggleMonitoring');
-      const show = cb && cb.checked;
-      document.querySelectorAll('.monitoring').forEach(el => {
-        el.style.display = show ? 'block' : 'none';
-      });
-    }
+painType.onchange = () => {
+  medsSel.innerHTML = '<option value="">-- Choose --</option>';
+  recBox.innerHTML = '';
+  comBox.style.display = 'none';
 
-    function showMedications() {
-      const painType = document.getElementById('painType').value;
-      const medicationBox = document.getElementById('medicationsBox');
-      const medicationSelect = document.getElementById('medication');
-      const comorbidityBox = document.getElementById('comorbidityBox');
-      const recommendation = document.getElementById('recommendation');
+  if (!drugOptions[painType.value]) return;
 
-      medicationSelect.innerHTML = '<option value="">-- Choose --</option>';
-      recommendation.innerHTML = '';
-      comorbidityBox.style.display = 'none';
+  drugOptions[painType.value].forEach(d => {
+    medsSel.innerHTML += `<option value="${d.toLowerCase()}">${d}</option>`;
+  });
+  medsBox.style.display = 'block';
+};
 
-      // reset checkboxes
-      document.querySelectorAll('.checkbox-group input[type="checkbox"]').forEach(cb => cb.checked = false);
+medsSel.onchange = () => {
+  comBox.style.display = 'block';
+  recBox.innerHTML = '';
+};
 
-      if (painType && drugOptions[painType]) {
-        drugOptions[painType].forEach(drug => {
-          const option = document.createElement('option');
-          option.textContent = drug;
-          option.value = drug.split(' ')[0].toLowerCase();
-          medicationSelect.appendChild(option);
-        });
-        medicationBox.style.display = 'block';
-      } else {
-        medicationBox.style.display = 'none';
-      }
-    }
+document.getElementById('showRecBtn').onclick = () => {
+  recBox.innerHTML = '';
+  let hasMon = false;
 
-    function showComorbidities() {
-      document.getElementById('comorbidityBox').style.display = 'block';
-      document.getElementById('recommendation').innerHTML = '';
-    }
+  document.querySelectorAll('.checkbox-group input:checked').forEach(cb => {
+    const html = recommendations[medsSel.value]?.[cb.value];
+    if (!html) return;
 
-    function showMultipleRecommendations() {
-      const selectedMed = document.getElementById('medication').value;
-      const checkboxes = document.querySelectorAll('.checkbox-group input[type="checkbox"]');
-      const recommendationBox = document.getElementById('recommendation');
+    const p = splitMonitoring(html);
+    if (p.mon) hasMon = true;
 
-      let result = '';
-      let hasAnyMonitoring = false;
+    recBox.innerHTML += p.main.replace('</div>', `<div class="monitoring" style="display:none">${p.mon}</div></div>`);
+  });
 
-      checkboxes.forEach(checkbox => {
-        if (
-          checkbox.checked &&
-          recommendations[selectedMed] &&
-          recommendations[selectedMed][checkbox.value]
-        ) {
-          const rawHtml = recommendations[selectedMed][checkbox.value];
+  if (hasMon) {
+    recBox.innerHTML += `
+      <label style="display:block;margin-top:15px">
+        <input type="checkbox" id="toggleMon"> Show risk monitoring
+      </label>`;
+    document.getElementById('toggleMon').onchange = e =>
+      document.querySelectorAll('.monitoring').forEach(m => m.style.display = e.target.checked ? 'block':'none');
+  }
+};
+</script>
 
-          const parts = splitOutMonitoring(rawHtml);
-          const finalHtml = injectHiddenMonitoring(parts.main, parts.monitoring);
-
-          if (parts.monitoring) hasAnyMonitoring = true;
-          result += finalHtml;
-        }
-      });
-
-      if (!result) {
-        recommendationBox.innerHTML =
-          '<div class="recommendation-box">No recommendation available for this combination.</div>';
-        return;
-      }
-
-      const toggleHtml = hasAnyMonitoring
-        ? `
-          <div style="margin-top:15px;">
-            <label style="display:block; font-size:16px;">
-              <input type="checkbox" id="toggleMonitoring" onchange="toggleMonitoring()">
-              Show risk monitoring
+</body>
+</html>
