@@ -132,6 +132,23 @@ with Hepatorenal and/or Cardiorenal Syndromes and Neuropathic Pain</h1>
     <div id="recommendation" style="margin-top: 20px;"></div>
   </div>
 
+  <!-- MONITORING -->
+<div id="monitoringWrapper" style="display:none; margin-top:20px;">
+  <label>
+    <input type="checkbox" id="monitoringCheckbox" onchange="toggleMonitoringBox()">
+    <strong>Monitoring</strong>
+  </label>
+  <div id="monitoringBox"
+       style="display:none;
+              background:#ffffff;
+              border:1px solid #ccc;
+              border-radius:8px;
+              padding:15px;
+              margin-top:10px;
+              color:#000;">
+  </div>
+</div>
+
   <div class="references">
     <strong>Guideline References:</strong><br>
     EFNS 2010 – Attal N, Cruccu G, Baron R, Haanpää M, Hansson P, Jensen TS, Nurmikko T. EFNS guidelines on the pharmacological treatment of neuropathic pain: 2010 revision. <em>Eur J Neurol.</em> 2010 Sep;17(9):1113-e88. doi:10.1111/j.1468-1331.2010.02999.x. PMID: 20402746.<br><br>
@@ -266,6 +283,46 @@ with Hepatorenal and/or Cardiorenal Syndromes and Neuropathic Pain</h1>
         result || '<div class="recommendation-box">No recommendation available for this combination.</div>';
 
     }
+
+    
+  /* ===== MONITORING CODE ZAČÍNÁ TADY ===== */
+
+  const monitoringTexts = {
+    venlafaxine: "aaaaaaaa",
+    duloxetine: "bbbbb",
+    carbamazepine: "ccccccc",
+    gabapentin: "ddd",
+    pregabalin: "eee",
+    amitriptyline: "fffff"
+  };
+
+  function toggleMonitoringBox() {
+    const cb = document.getElementById('monitoringCheckbox');
+    const box = document.getElementById('monitoringBox');
+    box.style.display = cb.checked ? 'block' : 'none';
+  }
+
+  function updateMonitoringUI() {
+    const selectedMed = document.getElementById('medication').value;
+    const wrapper = document.getElementById('monitoringWrapper');
+    const cb = document.getElementById('monitoringCheckbox');
+    const box = document.getElementById('monitoringBox');
+
+    if (!selectedMed || !monitoringTexts[selectedMed]) {
+      wrapper.style.display = 'none';
+      cb.checked = false;
+      box.style.display = 'none';
+      box.innerHTML = '';
+      return;
+    }
+
+    wrapper.style.display = 'block';
+    box.innerHTML = monitoringTexts[selectedMed];
+
+    if (!cb.checked) box.style.display = 'none';
+  }
+
+  /* ===== MONITORING CODE KONČÍ ===== */
   </script>
 </body>
 </html>
