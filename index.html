@@ -130,9 +130,7 @@ with Hepatorenal and/or Cardiorenal Syndromes and Neuropathic Pain</h1>
     </div>
 
     <div id="recommendation" style="margin-top: 20px;"></div>
-  </div>
-
-  <!-- MONITORING -->
+   <!-- MONITORING -->
 <div id="monitoringWrapper" style="display:none; margin-top:20px;">
   <label>
     <input type="checkbox" id="monitoringCheckbox" onchange="toggleMonitoringBox()">
@@ -148,6 +146,9 @@ with Hepatorenal and/or Cardiorenal Syndromes and Neuropathic Pain</h1>
               color:#000;">
   </div>
 </div>
+  </div>
+
+
 
   <div class="references">
     <strong>Guideline References:</strong><br>
@@ -263,6 +264,7 @@ with Hepatorenal and/or Cardiorenal Syndromes and Neuropathic Pain</h1>
     function showComorbidities() {
       document.getElementById('comorbidityBox').style.display = 'block';
       document.getElementById('recommendation').innerHTML = '';
+  updateMonitoringUI();  
     }
 
     function showMultipleRecommendations() {
