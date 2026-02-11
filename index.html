@@ -34,11 +34,6 @@
     .caution { background-color: #ffc000; }
     .possible { background-color: #70ad47; }
 
-    /* není použito
-    .pdf-container {
-      margin-top: 15px;
-    }*/
-
     select, label, input[type=checkbox] {
       font-size: 16px;
     }
@@ -65,13 +60,10 @@
       margin: 5px 0;
     }
 
-    /* ✅ Monitoring (UI) */
-    .monitoring-area {
-      margin-top: 20px;
-      display: none; /* zobrazí se až po kliknutí na Show Recommendations */
-    }
-    .monitoring-box {
-      background: #fff;
+    /* ✅ monitoring box styling (white inside pink) */
+    #monitoringBox {
+      display: none;
+      background: #ffffff;
       border: 1px solid #ccc;
       border-radius: 8px;
       padding: 15px;
@@ -112,8 +104,8 @@
 with Hepatorenal and/or Cardiorenal Syndromes and Neuropathic Pain</h1>
   <p><em>A Clinical Algorithm Developed Under the NETPHARM Project (New Technologies for Translational Research in Pharmaceutical Sciences). Project ID CZ.02.01.01/00/22_008/0004607, co-funded by the European Union.</em></p>
   <p>The CoAN-SAFE algorithm is a safety-oriented clinical decision-support tool for the use of psychotropic co-analgesics in frail older adults with neuropathic pain and multimorbidity (pregabalin, gabapentin, duloxetine, venlafaxine, amitriptyline, carbamazepine). It integrates guideline-based drug selection with patient-specific vulnerability factors.</p>
- <p>First, select the type of neuropathic pain (if known). The algorithm will suggest first- and second-line options based on international guidelines. If the pain type is unknown or if you wish to assess a specific drug (including off-label use), choose “Not specified / off-label use” and select the medication directly.</p>
-  </p>Next, select relevant patient risk domains (frailty, renal, hepatic, cardiovascular). The algorithm will generate a structured safety-focused output including key risks, monitoring recommendations, dose considerations, and a practical recommendation for clinical use.</p>
+  <p>First, select the type of neuropathic pain (if known). The algorithm will suggest first- and second-line options based on international guidelines. If the pain type is unknown or if you wish to assess a specific drug (including off-label use), choose “Not specified / off-label use” and select the medication directly.</p>
+  <p>Next, select relevant patient risk domains (frailty, renal, hepatic, cardiovascular). The algorithm will generate a structured safety-focused output including key risks, monitoring recommendations, dose considerations, and a practical recommendation for clinical use.</p>
   
   <div class="box">
     <label for="painType"><strong>1. Select type of neuropathic pain:</strong></label>
@@ -123,7 +115,6 @@ with Hepatorenal and/or Cardiorenal Syndromes and Neuropathic Pain</h1>
       <option value="postherpetic">Postherpetic neuropathy</option>
       <option value="trigeminal">Trigeminal neuralgia</option>
       <option value="central">Central pain</option>
-      <!-- ✅ NOVÁ VOLBA -->
       <option value="unspecified">Neuropathic pain – not specified/off-label use</option>
     </select>
 
@@ -145,14 +136,15 @@ with Hepatorenal and/or Cardiorenal Syndromes and Neuropathic Pain</h1>
 
     <div id="recommendation" style="margin-top: 20px;"></div>
 
-    <!-- ✅ Monitoring (na konci boxu) -->
-    <div id="monitoringArea" class="monitoring-area">
+    <!-- ✅ MONITORING (shows only after Show Recommendations) -->
+    <div id="monitoringWrapper" style="display:none; margin-top:20px;">
       <label>
-        <input type="checkbox" id="monitoringToggle" onchange="toggleMonitoring()">
+        <input type="checkbox" id="monitoringCheckbox" onchange="toggleMonitoringBox()">
         <strong>Monitoring</strong>
       </label>
-      <div id="monitoringBox" class="monitoring-box" style="display:none;"></div>
+      <div id="monitoringBox"></div>
     </div>
+
   </div>
 
   <div class="references">
@@ -161,8 +153,8 @@ with Hepatorenal and/or Cardiorenal Syndromes and Neuropathic Pain</h1>
     NICE CG173 – National Institute for Health and Care Excellence. Neuropathic pain in adults: pharmacological management in non-specialist settings [CG173]. London: NICE; 2013 [updated 2020 Dec]. Available from: https://www.nice.org.uk/guidance/cg173<br><br>
     CPS 2022 – Mu A, Weinberg E, Moulin DE, Clarke H. Pharmacologic management of chronic neuropathic pain: Review of the Canadian Pain Society consensus statement. <em>Can Fam Physician.</em> 2022 Nov;68(11):844–50.<br><br>
     AAN 2022 – Price R, Smith D, Franklin GM, Gronseth G, Pignone M, David WS, et al. Oral and topical treatment of painful diabetic polyneuropathy: Practice guideline update summary. <em>Neurology.</em> 2022 Jan 4;98(1):31–43. doi:10.1212/WNL.0000000000013038.<br><br>
-     <strong>Acknowledgement: <strong> We would like to thank Ing. Pavel Šebelík for his essential IT support and for helping to implement and optimise the algorithm.<br><br>
-     <strong>The algorithm is intended for non-commercial use only (academic, educational, and clinical purposes). <strong><br><br>
+    <strong>Acknowledgement: </strong> We would like to thank Ing. Pavel Šebelík for his essential IT support and for helping to implement and optimise the algorithm.<br><br>
+    <strong>The algorithm is intended for non-commercial use only (academic, educational, and clinical purposes). </strong><br><br>
   </div>
 
   <script>
@@ -191,7 +183,6 @@ with Hepatorenal and/or Cardiorenal Syndromes and Neuropathic Pain</h1>
         "Gabapentin (EFNS)",
         "Pregabalin (EFNS, NICE)"
       ],
-      /* ✅ Nový blok – všech šest léčiv */
       unspecified: [
         "Amitriptyline",
         "Duloxetine",
@@ -202,7 +193,7 @@ with Hepatorenal and/or Cardiorenal Syndromes and Neuropathic Pain</h1>
       ]
     };
 
-    /* ✅ Monitoring texty podle zvoleného léčiva (krok 2) */
+    /* ✅ Monitoring texty podle léku */
     const monitoringTexts = {
       venlafaxine: "aaaaaaaa",
       duloxetine: "bbbbb",
@@ -214,4 +205,7 @@ with Hepatorenal and/or Cardiorenal Syndromes and Neuropathic Pain</h1>
 
     const recommendations = {
       amitriptyline: {
-        renal: '<div class="recommendation-box caution"><b>RENAL IMPAIRMENT: USE WITH CAUTION.</b><br><b>Risks:</b> Amitriptyline undergoes extensive first-pass hepatic metabolism, forming several active metabolites before excretion in the urine. Between 12% and 80% of the dose is eliminated renally, primarily as metabolites. It is not a nephrotoxic drug, but urinary retention, orthostatic hypotension, and other cardiovascular adverse effects may secondarily contribute to renal impairment.<br><b>Risk monitoring:</b> Monitor renal function, liver enzymes, blood pressure, heart rate, ECG, and serum sodium levels at baseline and regularly during treatment, especially during initiation and dose adjustments. Observe for signs of fluid retention, orthostatic hypotension, dizziness, syncope, peripheral oedema, and cardiovascular toxicity. Monitor for signs of increased drug exposure, including sedation, confusion, gait instability, falls, cognitive decline, and overall functional deterioration. Assess for symptoms of hyponatraemia (e.g., fatigue, confusion, seizures) related to SIADH. Review concomitant medications for clinically relevant drug–drug interactions, particularly via CYP2D6, and consider genotyping and therapeutic drug monitoring (TDM) when clinically appropriate.<br><b>Dose adjustment:</b> For patients with mild to severe renal impairment, including those on haemodialysis, dose adjustments are generally not required; however, caution is advised.<br><b>Recommendation:</b><br>Use with caution in patients with renal impairment. Regularly monitor sodium and renal function parameters, particularly in older adults or in patien
+        renal: '<div class="recommendation-box caution"><b>RENAL IMPAIRMENT: USE WITH CAUTION.</b><br><b>Risks:</b> Amitriptyline undergoes extensive first-pass hepatic metabolism, forming several active metabolites before excretion in the urine. Between 12% and 80% of the dose is eliminated renally, primarily as metabolites. It is not a nephrotoxic drug, but urinary retention, orthostatic hypotension, and other cardiovascular adverse effects may secondarily contribute to renal impairment.<br><b>Risk monitoring:</b> Monitor renal function, liver enzymes, blood pressure, heart rate, ECG, and serum sodium levels at baseline and regularly during treatment, especially during initiation and dose adjustments. Observe for signs of fluid retention, orthostatic hypotension, dizziness, syncope, peripheral oedema, and cardiovascular toxicity. Monitor for signs of increased drug exposure, including sedation, confusion, gait instability, falls, cognitive decline, and overall functional deterioration. Assess for symptoms of hyponatraemia (e.g., fatigue, confusion, seizures) related to SIADH. Review concomitant medications for clinically relevant drug–drug interactions, particularly via CYP2D6, and consider genotyping and therapeutic drug monitoring (TDM) when clinically appropriate.<br><b>Dose adjustment:</b> For patients with mild to severe renal impairment, including those on haemodialysis, dose adjustments are generally not required; however, caution is advised.<br><b>Recommendation:</b><br>Use with caution in patients with renal impairment. Regularly monitor sodium and renal function parameters, particularly in older adults or in patients receiving interacting medications.</div>',
+        hepatic: '<div class="recommendation-box avoid"><b>HEPATIC IMPAIRMENT: BETTER AVOID.</b><br><b>Risks:</b> Amitriptyline undergoes extensive hepatic metabolism. CYP2D6 is the primary metabolic pathway, while CYP1A2, CYP2C19 and CYP3A4 are minor contributors. The drug may cause mild and transient increases in liver enzymes (occurring in 10-12% of patients) and is a rare cause of clinically apparent acute cholestatic liver injury. These aminotransferase abnormalities are usually mild, asymptomatic, and transient and are a rare cause of clinically apparent acute cholestatic liver injury. Reduced hepatic function can lead to increased drug exposure and heightened sensitivity to the anticholinergic and cardiovascular effects of amitriptyline.<br><b>Risk monitoring:</b> Monitor renal function, liver enzymes, blood pressure, heart rate, ECG, and serum sodium levels at baseline and regularly during treatment, especially during initiation and dose adjustments. Observe for signs of fluid retention, orthostatic hypotension, dizziness, syncope, peripheral oedema, and cardiovascular toxicity. Monitor for signs of increased drug exposure, including sedation, confusion, gait instability, falls, cognitive decline, and overall functional deterioration. Assess for symptoms of hyponatraemia (e.g., fatigue, confusion, seizures) related to SIADH. Review concomitant medications for clinically relevant drug–drug interactions, particularly via CYP2D6, and consider genotyping and therapeutic drug monitoring (TDM) when clinically appropriate.<br><b>Dose adjustment:</b> Use with caution in patients with hepatic impairment, as clearance is reduced, and plasma concentrations are increased. For Child-Pugh A or B, administer approximately 50% of the usual indication-specific dose, with slow titration in small increments (e.g., 5-12.5 mg) every 1-2 weeks, not exceeding 100 mg/day or the maximum recommended dose, whichever is lower.<br><b>Recommendation:</b><br>Better to avoid amitriptyline in patients with severe hepatic impairment (Child-Pugh C). For mild to moderate hepatic impairment (Child-Pugh A or B), use reduced doses with close monitoring. Discontinue immediately if hepatic injury or significant enzyme elevation occurs.</div>',
+        cardiac: '<div class="recommendation-box avoid"><b>CARDIOVASCULAR RISK: BETTER AVOID.</b><br><b>Risks:</b> Amitriptyline is a tricyclic antidepressant (TCA) that is metabolised to the active metabolite nortriptyline, which also possesses anticholinergic and cardiotoxic effects. The potential for cardiotoxicity (QTc and QRS prolongation, arrhythmia, and orthostatic hypotension) increases in patients with preexisting cardiac disease; therefore, it should be used with caution in patients with cardiac comorbidities. Reduced hepatic or renal function can lead to increased drug exposure and heightened sensitivity to the anticholinergic and cardiovascular effects of amitriptyline. CYP2D6 is the major hepatic metabolic pathway, while CYP1A2, CYP2C19 and CYP3A4 are minor pathways. Potent inhibitors of these enzymes may increase plasma concentrations and exacerbate cardiotoxicity. TCAs have also been rarely associated with the syndrome of inappropriate antidiuretic hormone secretion (SIADH) and/or hyponatraemia, particularly in the elderly, which may further compromise cardiovascular stability.<br><b>Risk monitoring:</b> Monitor renal function, liver enzymes, blood pressure, heart rate, ECG, and serum sodium levels at baseline and regularly during treatment, especially during initiation and dose adjustments. Observe for signs of fluid retention, orthostatic hypotension, dizziness, syncope, peripheral oedema, and cardiovascular toxicity. Monitor for signs of increased drug exposure, including sedation, confusion, gait instability, falls, cognitive decline, and overall functional deterioration. Assess for symptoms of hyponatraemia (e.g., fatigue, confusion, seizures) related to SIADH. Review concomitant medications for clinically relevant drug–drug interactions, particularly via CYP2D6, and consider genotyping and therapeutic drug monitoring (TDM) when clinically appropriate.<br><b>Dose adjustment:</b> No specific dose adjustment is required in patients with reduced ejection fraction (EF &lt; 40%). The dosing regimen should be similar to that used in elderly patients. Start with the lowest possible dose (25 mg) and titrate slowly up to a maximum of 75 mg in elderly patients, considering renal and hepatic function as well as the cumulative CNS and anticholinergic load.<br><b>Recommendation:</b><br>Avoid use in patients with severe heart failure, conduction abnormalities, or unstable cardiovascular disease. If therapy is essential, initiate treatment at the lowest possible dose and closely monitor ECG, serum sodium, and concomitant cardiovascular medications.</div>',
+        frailty: '<div class="recommendation-box avoid"><b>FRAILTY: BETTER AVOID.</b><br><b>Risks:</b> Amitriptyline can lead to increased drug exposure and sensitivity to its anticholinergic and cardiovascular effects in the elderly. It is a CNS-active and anticholinergic drug associated with sedation, dizziness, confusion, and hyponatraemia — all of which increase the risk of falls, delirium, and cognitive decline in frail older adults. It may also cause the syndrome of inappropriate antidiure
