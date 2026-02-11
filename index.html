@@ -267,48 +267,5 @@ with Hepatorenal and/or Cardiorenal Syndromes and Neuropathic Pain</h1>
 
     }
   </script>
-       /* ===== MONITORING EXTENSION (SAFE) ===== */
-
-const monitoringTexts = {
-  venlafaxine: "aaaaaaaa",
-  duloxetine: "bbbbb",
-  carbamazepine: "ccccccc",
-  gabapentin: "ddd",
-  pregabalin: "eee",
-  amitriptyline: "monitor"
-};
-
-function toggleMonitoringBox() {
-  const selectedMed = document.getElementById('medication').value;
-  const box = document.getElementById('monitoringBox');
-  const checkbox = document.getElementById('monitoringCheckbox');
-
-  if (checkbox.checked) {
-    box.innerText = monitoringTexts[selectedMed] || "No monitoring defined.";
-    box.style.display = 'block';
-  } else {
-    box.style.display = 'none';
-  }
-}
-
-/* napojení na původní funkci bez jejího přepisování */
-const originalShowMultipleRecommendations = showMultipleRecommendations;
-
-showMultipleRecommendations = function() {
-
-  originalShowMultipleRecommendations(); // spustí původní logiku
-
-  const recommendationContent = document.getElementById('recommendation').innerHTML;
-
-  if (recommendationContent.trim() !== "") {
-    document.getElementById('monitoringWrapper').style.display = "block";
-  } else {
-    document.getElementById('monitoringWrapper').style.display = "none";
-  }
-
-  document.getElementById('monitoringCheckbox').checked = false;
-  document.getElementById('monitoringBox').style.display = "none";
-};
-
 </body>
 </html>
